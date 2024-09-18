@@ -13,6 +13,10 @@ const config: Config = {
         foreground: "var(--foreground)",
       },
     },
+    fontFamily: {
+      ppeditorialoldRegular: ["ppeditorialoldRegular", "sans-serif"],
+      ppneuemontrealMedium: ["ppneuemontrealMedium", "sans-serif"]
+    }
   },
   plugins: [],
 };

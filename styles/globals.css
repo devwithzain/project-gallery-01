@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+	src: url("../fonts/ppneuemontreal-medium.otf");
+	font-family: ppneuemontrealMedium;
+}
+
+@font-face {
+	src: url("../fonts/ppeditorialold-regular.otf");
+	font-family: ppeditorialoldRegular;
+}
+
+body {
+	font-family: ppeditorialoldRegular;
+}
+
+body::-webkit-scrollbar {
+	width: 0%;
+}
+
+.pers {
+	perspective: 500px;
+	perspective-origin: 50% 100%;
+}
+
+.tr3d {
+	transform: translate3d(-50%, -50%, 0);
+}
+
+.clipPath {
+	clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+h1 span {
+	display: inline-block;
+}

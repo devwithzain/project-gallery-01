@@ -1,101 +1,163 @@
+"use client";
+import gsap from "gsap";
+import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
+import { project3, project4, project5, project6, project7 } from "@/public";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+export default function App() {
+	const isAnimating = useRef<boolean>(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+	useEffect(() => {
+		const splitTextIntoSpans = (selector: string) => {
+			const elements = document.querySelectorAll<HTMLElement>(selector);
+
+			elements.forEach((element) => {
+				const text = element.innerText;
+				// Ensure text is properly split into spans
+				const splitText = text
+					.split("")
+					.map(
+						(char: string) => `<span>${char === " " ? "&nbsp;" : char}</span>`,
+					)
+					.join("");
+				element.innerHTML = splitText;
+			});
+		};
+
+		const initializeCards = () => {
+			const cards = Array.from(document.querySelectorAll<HTMLElement>(".card"));
+			gsap.to(cards, {
+				y: (i) => -10 + 10 * i + "%",
+				z: (i) => 15 * i,
+				duration: 0.75,
+				ease: "power1.out",
+				stagger: -0.1,
+			});
+		};
+
+		const handleCardClick = () => {
+			if (isAnimating.current) return;
+			isAnimating.current = true;
+
+			const slider = document.querySelector<HTMLElement>(".slider");
+			if (!slider) return;
+
+			const cards = Array.from(slider.querySelectorAll<HTMLElement>(".card"));
+			const lastCard = cards.pop();
+			const nextCard = cards[cards.length - 1];
+
+			if (lastCard) {
+				gsap.to(lastCard.querySelectorAll("h1 span"), {
+					y: 200,
+					duration: 0.75,
+					ease: "power1.out",
+				});
+
+				gsap.to(lastCard, {
+					y: "+=150%",
+					duration: 0.75,
+					ease: "power1.out",
+					onComplete: () => {
+						if (lastCard) {
+							slider.prepend(lastCard);
+							initializeCards();
+							gsap.set(lastCard.querySelectorAll("h1 span"), { y: -200 });
+
+							setTimeout(() => {
+								isAnimating.current = false;
+							}, 1000);
+						}
+					},
+				});
+			}
+
+			if (nextCard) {
+				gsap.to(nextCard.querySelectorAll("h1 span"), {
+					y: 0,
+					duration: 0.75,
+					ease: "power1.out",
+					stagger: 0.05,
+				});
+			}
+		};
+
+		splitTextIntoSpans(".copy h1");
+		initializeCards();
+
+		gsap.set("h1 span", { y: -200 });
+		gsap.set(".slider .card:last-child h1 span", { y: 0 });
+
+		document.addEventListener("click", handleCardClick);
+
+		// Clean up event listener on component unmount
+		return () => {
+			document.removeEventListener("click", handleCardClick);
+		};
+	}, []);
+	return (
+		<>
+			<nav className="w-full py-5 px-10 fixed top-0 left-0 bg-transparent z-20">
+				<div className="w-full flex items-center justify-between gap-5">
+					<div className="w-fit">
+						<h1 className="text-[20px] font-medium tracking-tight leading-tight">
+							Noir Wood
+						</h1>
+					</div>
+					<div className="flex gap-5 w-fit">
+						{["Film,", "Production,", "Info,", "Contact"].map((item, index) => (
+							<Link
+								key={index}
+								href="/"
+								className="text-[20px] font-medium tracking-tight leading-tight">
+								{item}
+							</Link>
+						))}
+					</div>
+					<div className="flex gap-5 w-fit">
+						{["Search", "Account", "Cart"].map((item, index) => (
+							<Link
+								key={index}
+								href="/"
+								className="text-[20px] font-medium tracking-tight leading-tight">
+								{item}
+							</Link>
+						))}
+					</div>
+				</div>
+			</nav>
+			<footer className="w-full py-5 px-10 fixed bottom-0 left-0 bg-transparent z-20">
+				<div className="w-full flex items-center justify-between gap-5">
+					<h1 className="text-[20px] font-medium tracking-tight leading-tight">
+						Showreel 2.0
+					</h1>
+					<h1 className="text-[20px] font-medium tracking-tight leading-tight">
+						2024 / 2025
+					</h1>
+				</div>
+			</footer>
+			<div className="relative w-screen h-screen overflow-hidden bg-[#dfe1c8]">
+				<div className="slider absolute top-[5vh] w-screen h-screen overflow-hidden pers">
+					{[project3, project4, project5, project6, project7].map(
+						(img, index) => (
+							<div
+								className="card absolute top-1/2 left-1/2 w-1/2 h-[500px] rounded-[15px] overflow-hidden bg-black tr3d"
+								key={index}>
+								<Image
+									src={img}
+									alt="airmax"
+									className="w-full h-full object-cover absolute opacity-75"
+								/>
+								<div className="copy absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full clipPath">
+									<h1 className="text-[6vw] font-medium tracking-tight leading-tight font-ppeditorialoldRegular uppercase text-[#dfe1c8] text-center">
+										ethereal noir
+									</h1>
+								</div>
+							</div>
+						),
+					)}
+				</div>
+			</div>
+		</>
+	);
 }
